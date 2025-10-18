@@ -7,12 +7,9 @@ import (
 )
 
 type Config struct {
-	Broker       string `json:"broker"`
-	Topic        string `json:"topic"`
-	AckTopic     string `json:"ack_topic"`
-	DownloadDir  string `json:"download_dir"`
-	Concurrency  int    `json:"concurrency"`
-	ComputerName string `json:"computer_name"`
+	Broker      string `json:"broker"`
+	DownloadDir string `json:"download_dir"`
+	Concurrency int    `json:"concurrency"`
 }
 
 func LoadConfig() Config {
