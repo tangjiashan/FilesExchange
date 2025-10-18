@@ -1,0 +1,5 @@
+{
+  "broker": "tcp://broker.emqx.io:1883",
+  "download_dir": "/Users/tangjiashan/workspace/mqtt_downloader_go/downloads",
+  "concurrency": 4
+}
