@@ -1,7 +1,8 @@
 # 项目说明
 
 > 研究基于minio服务文件的二级缓存分发，仅供学习参考，原项目地址：git@gitee.com:jsonqi/minio-spring-web.git
-> 基于原项目增加了windows go下载客户端，当文件上传成功后，通过MQTT消息通知windows客户端。增加windows客户端分片下载，二级缓存策略。
+> 在原项目基础之上增加了windows go下载客户端，当文件上传成功后，服务端通过MQTT消息通知windows客户端。
+> 服务端增加windows客户端分片下载的API，增加文件二级缓存下载策略。
 
 # 适用场景
 - 分布式文件分发系统（内部文档分发、门店同步）
@@ -10,7 +11,7 @@
 
 # 项目技术
 
-- windows客户端：go + mqtt
+- windows客户端：go + MQTT
 - 前端Vue：vue@3.4 + TypeScript + arco design vue + axios
 - 后端：SpringBoot3.x + Redis + minio + lombok + MybatisPlus
 
