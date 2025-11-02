@@ -470,4 +470,9 @@ public class DownloadManager {
             throw ioe;
         }
     }
+
+    public void uploadStreamToMinio(String objectKey, InputStream input) throws Exception {
+        minioUtil.upload(objectKey, input, "application/octet-stream");
+    }
+
 }

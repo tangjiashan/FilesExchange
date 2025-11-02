@@ -43,11 +43,11 @@ public class MqttConfig {
             options.setPassword(password.toCharArray());
         }
 
-        // ✅ 添加连接回调
+        // 添加连接回调
         client.setCallback(new MqttCallbackExtended() {
             @Override
             public void connectionLost(Throwable cause) {
-                System.err.println("⚠️ MQTT连接丢失: " + cause.getMessage());
+                System.err.println("MQTT连接丢失: " + cause.getMessage());
             }
 
             @Override

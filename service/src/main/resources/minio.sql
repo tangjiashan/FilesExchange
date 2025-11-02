@@ -16,3 +16,20 @@ create table files
     create_time      timestamp(6) default current_timestamp(6) comment '创建时间',
     primary key (id)
 ) comment '文件表';
+
+CREATE TABLE sftp_server_config (
+                                    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                                    station_id VARCHAR(64),
+                                    name VARCHAR(128),
+                                    host VARCHAR(128),
+                                    port INT DEFAULT 22,
+                                    username VARCHAR(64),
+                                    password VARCHAR(255),
+                                    source_dir VARCHAR(255),
+                                    target_dir VARCHAR(255),
+                                    retry_count INT DEFAULT 3,
+                                    retry_delay INT DEFAULT 10,
+                                    active TINYINT DEFAULT 1,
+                                    last_pull_time DATETIME DEFAULT NULL,
+                                    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) comment 'SFTP服务表';

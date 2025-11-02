@@ -18,6 +18,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -211,5 +214,41 @@ public class MinioUtil {
         }
         return parts;
     }
+
+    /**
+     * 直接上传文件流到 MinIO（用于 SFTP / HTTP 直传）
+     * @param objectKey MinIO 对象名，例如 "upload/2025/11/01/test.pdf"
+     * @param input 输入流（文件内容）
+     * @param contentType 文件类型（可为空，默认 application/octet-stream）
+     */
+    @SneakyThrows
+    public void upload(String objectKey, InputStream input, String contentType) {
+        if (contentType == null || contentType.isEmpty()) {
+            contentType = "application/octet-stream";
+        }
+
+        try {
+            // 上传对象
+            PutObjectArgs args = PutObjectArgs.builder()
+                    .bucket(minioConfigInfo.getBucket())
+                    .object(objectKey)
+                    .stream(input, -1, 10 * 1024 * 1024) // -1 表示未知长度，最大10MB缓冲
+                    .contentType(contentType)
+                    .build();
+
+            customMinioClient.putObject(args);
+            log.info("✅ 成功上传文件到 MinIO: {}", objectKey);
+
+        } catch (Exception e) {
+            log.error("❌ 上传到 MinIO 失败: objectKey={}, error={}", objectKey, e.getMessage());
+            throw new ConditionException(HttpCodeEnum.UPLOAD_FILE_FAILED);
+        } finally {
+            try {
+                input.close();
+            } catch (IOException ignored) {}
+        }
+    }
+
+
 
 }
