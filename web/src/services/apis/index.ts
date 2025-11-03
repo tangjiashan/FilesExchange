@@ -53,3 +53,8 @@ export const chunkDownloadFile = (id: number, bytes: string) => {
 export const fetchFileList = () => {
   return http.get<FilesType[]>(`files/list`)
 }
+
+export const getConfigs = () => http.get('/api/sftp/configs');
+export const createConfig = (data: any) => http.post('/api/sftp/configs', data);
+export const updateConfig = (id: number, data: any) => http.put(`/api/sftp/configs/${id}`, data);
+export const deleteConfig = (id: number) => http.delete(`/api/sftp/configs/${id}`);
