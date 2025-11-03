@@ -1,9 +1,10 @@
 # 项目说明
 
-> 研究基于minio服务文件的二级缓存分发，支持HTTP和SFTP，仅供学习参考。
-> web客户端支持http上传下载文件.
-> go下载客户端，当文件上传成功后，服务端通过MQTT消息通知windows客户端下载文件。
-> 服务端增加go客户端分片下载的API，增加文件二级缓存下载策略。
+> 研究基于minio服务文件的二级缓存分发，仅供学习参考。
+> 支持HTTP和SFTP上传文件.
+> 支持web客户端通过http上传下载文件.
+> 支持go跨平台下载客户端，当文件上传成功后，服务端通过MQTT消息通知go客户端下载文件。
+> 基于文件分片的二级缓存下载策略，支持1-2000个go客户端同时并发下载。
 
 # 适用场景
 - AI 训练数据文件同步（大文件分片传输）
@@ -12,8 +13,8 @@
 
 # 项目技术
 
-- windows客户端：go + MQTT
-- 前端Vue：vue@3.4 + TypeScript + arco design vue + axios
+- 跨平台客户端：golang + MQTT
+- 前端React：React + TypeScript + antd + axios
 - 后端：SpringBoot3.x + Redis + minio + lombok + MybatisPlus
 
 
@@ -27,14 +28,14 @@
             |
             |
 +------------------------+          +------------------------+
-|   Download Proxy API   | ← ------ |    前端页面上传文件      |
-|  (Spring Boot + Redis) |          |      (vue web )        |
+|   Download Proxy API   | ← ------ |    HTTP上传文件      |
+|  (Spring Boot + Redis) |          |      (web)        |
 |                        |          +------------------------+
 | - 分片请求调度           |
-| - Redis文件元信息缓存     |
-| - 分片结果缓存           |
-| - 断点续传Range支持      |
-| - Caffeine + Redis 双层缓存 |
+| - Redis文件元信息缓存     |         +------------------------+
+| - 分片结果缓存           |← ------ |    SFTP上传文件          |
+| - 断点续传Range支持      |         |        （linux）        |
+| - Caffeine + Redis 双层缓存 |      +------------------------+
 +-----------+------------+
             |
             ▼
