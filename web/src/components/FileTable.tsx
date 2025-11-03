@@ -48,7 +48,8 @@ const FileTable: React.FC = memo(() => {
     {
       title: '下载进度',
       dataIndex: 'progress',
-      render: (val) => <>{!!val && <Progress percent={val} size="small" />}</>,
+      render: (val) =>
+      val !== undefined ? <Progress percent={val} size="small" /> : null,
     },
     {
       title: '操作',
@@ -109,29 +110,30 @@ const FileTable: React.FC = memo(() => {
     const offset = blobRef.current.get(record.id)?.length || 0
 
     for (let i = offset + 1; i <= totalChunks; i++) {
-      // 暂停/错误 终止后续请求
       if (getDataSource()[index].status !== 'downloading') return
 
       const start = CHUNK_SIZE * (i - 1)
-      let end = CHUNK_SIZE * i - 1
-      if (end > record.size) end = record.size // 虽然超出不会影响内容读取，但是会影响进度条的展示
+      let end = Math.min(CHUNK_SIZE * i - 1, record.size)
 
-      try {
-        const res = await chunkDownloadFile(record.id, `bytes=${start}-${end}`)
-        const currentDataBlob = blobRef.current.get(record.id) || []
-        // 记录当前数据的分片 blob
-        blobRef.current.set(record.id, [...currentDataBlob, res as unknown as BlobPart])
+    try {
+      const res = await chunkDownloadFile(record.id, `bytes=${start}-${end}`)
+      const currentDataBlob = blobRef.current.get(record.id) || []
+      blobRef.current.set(record.id, [...currentDataBlob, res as unknown as BlobPart])
 
-        const _dataSource = [...getDataSource()]
-        _dataSource[index].progress = Math.floor((end / record.size) * 100)
-        setDataSource(_dataSource)
-      } catch (error) {
-        const _dataSource = [...getDataSource()]
-        _dataSource[index].status = 'error'
-        setDataSource(_dataSource)
-        return
-      }
+      const _dataSource = [...getDataSource()]
+      const percent = Math.min(100, Math.ceil((i / totalChunks) * 100))
+      _dataSource[index].progress = percent
+      setDataSource(_dataSource)
+
+      //  给 React 时间渲染
+      await new Promise((resolve) => setTimeout(resolve, 30))
+    } catch (error) {
+      const _dataSource = [...getDataSource()]
+      _dataSource[index].status = 'error'
+      setDataSource(_dataSource)
+      return
     }
+  }
     const _dataSource1 = [...getDataSource()]
     _dataSource1[index].status = undefined // 重置状态
     _dataSource1[index].progress = undefined // 重置进度条
